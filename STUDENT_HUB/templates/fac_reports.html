@@ -1,0 +1,294 @@
+{% extends "nav_faculty.html"%}
+  {% block title %} Faculty Dashboard - Reports {% endblock %}
+  {% block extra_css %}
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .header {
+      padding: 40px 40px 20px 40px;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #1e293b;
+    }
+    
+    .header p {
+      color: #64748b;
+      margin: 0 0 30px 0;
+      font-size: 16px;
+    }
+    
+   
+    
+    .container {
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      max-width: 1200px;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .section h2 {
+      margin: 0 0 20px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: white;
+    }
+    
+    .card:hover { 
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      border-color: #cbd5e1;
+    }
+    
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .blue { background: #dbeafe; color: #1d4ed8; }
+    .green { background: #dcfce7; color: #16a34a; }
+    .purple { background: #f3e8ff; color: #9333ea; }
+    
+    .card-content b { 
+      display: block; 
+      margin-bottom: 4px; 
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 15px;
+    }
+    
+    .card-content span {
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    .recent-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .recent-item b { 
+      font-size: 14px; 
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .recent-item span {
+      color: #64748b;
+      font-size: 13px;
+    }
+    
+    .recent-item a { 
+      color: #3b82f6; 
+      font-weight: 600; 
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* Success Popup */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1000;
+    }
+    
+    .success-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      text-align: center;
+      min-width: 400px;
+      z-index: 1001;
+    }
+    
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #d1fae5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+    
+    .success-icon::after {
+      content: '✓';
+      color: #16a34a;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .success-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    
+    .success-message {
+      color: #64748b;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    
+    .success-popup button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+    
+    .success-popup button:hover {
+      background: #2563eb;
+    }
+  </style>
+  {% endblock %}
+{% block content %}
+  <div class="header">
+    <h1>Faculty Dashboard</h1>
+    <p>Manage student activities, approvals, and academic progress</p>
+    
+    
+  </div>
+
+  <div class="container">
+    <!-- Generate Reports -->
+    <div class="section">
+      <h2>Generate Reports</h2>
+      <a href="{% url 'download_naac_report' %}" style="text-decoration:none;">
+        <div class="card">
+          <div class="icon blue">📄</div>
+          <div class="card-content">
+            <b>NAAC Compliance Report</b>
+            <span>Comprehensive student activity summary for accreditation</span>
+          </div>
+        </div>
+      </a>
+      <div class="card" onclick="showSuccess('Department Performance Report generated successfully!')">
+        <div class="icon green">📊</div>
+        <div class="card-content">
+          <b>Department Performance</b>
+          <span>Department-wise activity analysis and statistics</span>
+        </div>
+      </div>
+      <a href="{% url 'faculty_students' %}" style="text-decoration:none;">
+        <div class="card">
+          <div class="icon purple">👤</div>
+          <div class="card-content">
+            <b>Individual Student Report</b>
+            <span>Detailed portfolio for specific students</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="section">
+      <h2>Recent Reports</h2>
+      <div class="recent-item">
+        <div>
+          <b>Q1 2024 NAAC Report</b><br>
+          <span>Generated on March 1, 2024</span>
+        </div>
+        {% comment %} <a href="#">Download</a> {% endcomment %}
+      </div>
+      <div class="recent-item">
+        <div>
+          <b>CS Department Analysis</b><br>
+          <span>Generated on February 28, 2024</span>
+        </div>
+        {% comment %} <a href="#">Download</a> {% endcomment %}
+      </div>
+      <div class="recent-item">
+        <div>
+          <b>Student Activity Summary</b><br>
+          <span>Generated on February 25, 2024</span>
+        </div>
+        {% comment %} <a href="#">Download</a> {% endcomment %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="popup-overlay" id="popupOverlay"></div>
+  <div class="success-popup" id="successPopup">
+    <div class="success-icon"></div>
+    <div class="success-title">Success!</div>
+    <div class="success-message" id="successMessage">Report generated successfully!</div>
+    <button onclick="closeSuccess()">OK</button>
+  </div>
+
+  <script>
+    function showSuccess(message) {
+      document.getElementById("successMessage").innerText = message;
+      document.getElementById("popupOverlay").style.display = "block";
+      document.getElementById("successPopup").style.display = "block";
+    }
+    function closeSuccess() {
+      document.getElementById("popupOverlay").style.display = "none";
+      document.getElementById("successPopup").style.display = "none";
+    }
+    
+    // Close popup when clicking overlay
+    document.getElementById("popupOverlay").addEventListener('click', closeSuccess);
+  </script>
+{% endblock %}

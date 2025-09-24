@@ -1,0 +1,656 @@
+{% extends "navbar_student.html" %}
+    {% block title %}Performance Scorecard {% endblock %}
+    {% block extra_css %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        main {
+            padding: 30px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .dream{
+            padding: 20px;
+            
+        }
+
+       .dream h2 {
+            font-size: 28px;
+            font-weight: 600;
+       }
+
+        .dream welcometext {
+            color: #64748b;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+
+        /* Main Performance Card */
+        .big-card {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 3px solid #3b82f6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .big-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+            border-color: #2563eb;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        .header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .grade-circle {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 20px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .big-card:hover .grade-circle {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .grade-label {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Summary Cards */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary .card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .summary .card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+        }
+
+        .summary .card:nth-child(1):hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .summary .card:nth-child(2):hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+
+        .summary .card:nth-child(3):hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+        }
+
+        .circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .circle {
+            transform: scale(1.1);
+        }
+
+        .circle.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .circle.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .circle.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .card p:not(.title) {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .fill.blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+        .fill.green { background: linear-gradient(90deg, #10b981, #059669); }
+        .fill.purple { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+
+        .card:hover .fill {
+            transform: scaleX(1.02);
+            filter: brightness(1.1);
+        }
+
+        /* Performance Block */
+        .performance-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .performance, .monthly {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .performance:hover, .monthly:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+        }
+
+        .performance h3, .monthly h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+            gap: 12px;
+        }
+
+        .bar-row span:first-child {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .bar-row .progress-bar {
+            flex: 2;
+            height: 6px;
+        }
+
+        .percent {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .dot.blue { background: #3b82f6; }
+        .dot.green { background: #10b981; }
+        .dot.orange { background: #f59e0b; }
+        .dot.purple { background: #8b5cf6; }
+
+        /* --- START: New CSS for Attendance Chart --- */
+
+        .attendance-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding-top: 10px;
+        }
+
+        .attendance-chart {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            /* The --percentage CSS variable drives the chart's appearance */
+            background: conic-gradient(#3b82f6 calc(var(--percentage, 0) * 1%), #e2e8f0 0);
+            position: relative;
+        }
+
+        .attendance-chart::before {
+            content: "";
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background: #f8fafc; /* Should match the card's background */
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .monthly:hover .attendance-chart::before {
+             background: #ffffff; /* Match the card's hover background */
+        }
+
+        .percentage-text {
+            position: relative;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .attendance-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .stat-value.absent {
+            color: #ef4444; /* Red color for absent count */
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* --- END: New CSS for Attendance Chart --- */
+
+        /* Original styles for the removed bar chart (commented out)
+        .bar-chart {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 120px;
+            margin-top: 20px;
+            padding: 0 8px;
+        }
+
+        .bar-chart > div {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .bar-chart > div:hover .bar {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: scale(1.1);
+        }
+
+        .bar-chart span {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        */
+
+        /* Detail Cards */
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-card:nth-child(1) {
+            border-left-color: #3b82f6;
+        }
+
+        .detail-card:nth-child(2) {
+            border-left-color: #10b981;
+        }
+
+        .detail-card:nth-child(3) {
+            border-left-color: #8b5cf6;
+        }
+
+        .detail-card:nth-child(4) {
+            border-left-color: #f59e0b;
+        }
+
+        .detail-card h4 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .detail-card p {
+            color: #64748b;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-card ul {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .detail-card li {
+            padding: 4px 0;
+            font-size: 14px;
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .detail-card li:before {
+            content: "●";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+        }
+
+        .detail-card li:has-text("Pending"):before,
+        .detail-card li:has-text("Ongoing"):before {
+            color: #f59e0b;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .badge.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .badge.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .badge.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        /* Peer Comparison */
+        .peer-comparison {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .peer-card {
+            padding: 32px 24px;
+            border-radius: 16px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .peer-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .peer-card.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .peer-card.blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .peer-card.purple {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .peer-card h4 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .peer-card p {
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .peer-card span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .performance-block {
+                grid-template-columns: 1fr;
+            }
+            
+            .details {
+                grid-template-columns: 1fr;
+            }
+            
+            .peer-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 20px;
+            }
+            
+            .big-card {
+                padding: 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="dream">
+    <h2>Welcome back, {{ student.first_name }}! 🎓</h2>
+    <span id="welcometext">Here is your detailed performance scorecard.</span></div>
+
+    <div class="container">
+        <section class="big-card">
+            <div class="header">
+                <div><h2>Overall Performance Scorecard</h2><p>Real-time Data</p></div>
+            </div>
+
+            <div class="summary">
+                <div class="card"><div class="circle blue">{{ total_credits }}</div><p class="title">Credit Points</p></div>
+                <div class="card"><div class="circle green">{{ total_activities }}</div><p class="title">Approved Activities</p></div>
+                <div class="card"><div class="circle purple">{{ class_rank }}</div><p class="title">Class Rank</p><p>Out of {{ total_students }} students</p></div>
+            </div>
+
+            <div class="performance-block">
+                <div class="performance">
+                    <h3>Category Summary</h3>
+                    <ul style="list-style: none; padding-top: 10px;">
+                        <li style="font-size: 16px; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                            <span class="dot blue"></span>
+                            <strong>Certificates:</strong> {{ detail_card_data.certificates.count }}
+                        </li>
+                        <li style="font-size: 16px; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                            <span class="dot green"></span>
+                            <strong>Projects:</strong> {{ detail_card_data.projects.count }}
+                        </li>
+                        <li style="font-size: 16px; padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
+                            <span class="dot purple"></span>
+                            <strong>Other Activities:</strong> {{ detail_card_data.activities.count }}
+                        </li>
+                        <li style="font-size: 16px; padding: 12px 0;">
+                            <span class="dot orange"></span>
+                            <strong>Latest CGPA:</strong> {{ detail_card_data.results.cgpa|floatformat:2 }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="monthly"> <h3>Attendance Performance</h3> <div class="attendance-content">
+                        <div class="attendance-chart" style="--percentage: {{ attendance_data.percentage|default:0 }};">
+                            <span class="percentage-text">{{ attendance_data.percentage|default:0 }}%</span>
+                        </div>
+                        <div class="attendance-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">{{ attendance_data.attended|default:0 }}</div>
+                                <div class="stat-label">Attended</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value absent">{{ attendance_data.absent|default:0 }}</div>
+                                <div class="stat-label">Absent</div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </section>
+
+        <section class="details">
+            <div class="detail-card" style="border-left-color: #3b82f6;">
+                <h4>Recent Certificates</h4>
+                <p>Total Credits: <strong>{{ detail_card_data.certificates.credits }}</strong> from <strong>{{ detail_card_data.certificates.count }}</strong> certificates.</p>
+                <ul>{% for item in detail_card_data.certificates.recent_items %}<li>{{ item.certificate_name }} - {{ item.credit }} pts</li>{% empty %}<li>No approved certificates.</li>{% endfor %}</ul>
+            </div>
+            <div class="detail-card" style="border-left-color: #10b981;">
+                <h4>Recent Projects</h4>
+                <p>Total Credits: <strong>{{ detail_card_data.projects.credits }}</strong> from <strong>{{ detail_card_data.projects.count }}</strong> projects.</p>
+                <ul>{% for item in detail_card_data.projects.recent_items %}<li>{{ item.project_name }} - {{ item.credit }} pts</li>{% empty %}<li>No approved projects.</li>{% endfor %}</ul>
+            </div>
+            <div class="detail-card" style="border-left-color: #8b5cf6;">
+                <h4>Recent Activities</h4>
+                <p>Total Credits: <strong>{{ detail_card_data.activities.credits }}</strong> from <strong>{{ detail_card_data.activities.count }}</strong> activities.</p>
+                <ul>{% for item in detail_card_data.activities.recent_items %}<li>{{ item.activity_name }} - {{ item.credit }} pts</li>{% empty %}<li>No other approved activities.</li>{% endfor %}</ul>
+            </div>
+            <div class="detail-card" style="border-left-color: #f59e0b;">
+                <h4>Recent Academic Results</h4>
+                <p>Latest CGPA: <strong>{{ detail_card_data.results.cgpa|floatformat:2 }}</strong></p>
+                <ul>{% for item in detail_card_data.results.recent_items %}<li>Semester {{ item.semester }} - SGPA: {{ item.sgpa|floatformat:2 }}</li>{% empty %}<li>No results added yet.</li>{% endfor %}</ul>
+            </div>
+        </section>
+
+        <section>
+            <h3 style="margin-bottom: 20px; font-size: 24px;">Peer Comparison</h3>
+            <div class="peer-comparison">
+                <div class="peer-card green">
+                    <h4>Top {{ rank_top_percent|floatformat:0 }}%</h4>
+                    <p>Class Ranking</p>
+                    <span>{{ class_rank }}th out of {{ total_students }} students</span>
+                </div>
+                <div class="peer-card blue">
+                    <h4>{% if total_credits > class_avg_credits %}Above Avg{% elif total_credits == class_avg_credits %}Average{% else %}Below Avg{% endif %}</h4>
+                    <p>Credit Points</p>
+                    <span>You: {{ total_credits }} vs Class Avg: {{ class_avg_credits|floatformat:0 }}</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}

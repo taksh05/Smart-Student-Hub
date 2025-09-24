@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Registration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f4fd 0%, #c3dafe 25%, #a5b4fc 50%, #ddd6fe 75%, #f3e8ff 100%);
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 75% 75%, rgba(147, 197, 253, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(219, 234, 254, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: rotate(0deg) scale(1);
+      }
+      33% {
+        transform: rotate(1deg) scale(1.02);
+      }
+      66% {
+        transform: rotate(-1deg) scale(0.98);
+      }
+    }
+
+    .register-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 45px;
+      border-radius: 25px;
+      box-shadow: 
+        0 20px 60px rgba(59, 130, 246, 0.15),
+        0 8px 32px rgba(147, 197, 253, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      width: 100%;
+      max-width: 650px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .register-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
+      background-size: 300% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% {
+        background-position: 0% 0%;
+      }
+      50% {
+        background-position: 100% 0%;
+      }
+    }
+
+    .register-container:hover {
+      box-shadow: 
+        0 30px 80px rgba(59, 130, 246, 0.2),
+        0 12px 40px rgba(147, 197, 253, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transform: translateY(-8px) scale(1.02);
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 35px;
+      position: relative;
+    }
+
+    .register-header h2 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .register-header p {
+      color: #64748b;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .form-group label span {
+      color: #ef4444;
+      font-weight: 700;
+      margin-left: 2px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 16px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 15px;
+      background: rgba(248, 250, 252, 0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-group input:hover,
+    .form-group select:hover {
+      border-color: #3b82f6;
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2563eb;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 
+        0 0 0 4px rgba(59, 130, 246, 0.1),
+        0 8px 24px rgba(59, 130, 246, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .form-group input::placeholder {
+      color: #9ca3af;
+      transition: opacity 0.3s ease;
+    }
+
+    .form-group input:focus::placeholder {
+      opacity: 0.5;
+    }
+
+    .register-button {
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.3px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+      color: white;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      margin-top: 30px;
+    }
+
+    .register-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .register-button:hover::before {
+      left: 100%;
+    }
+
+    .register-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+      box-shadow: 
+        0 12px 32px rgba(59, 130, 246, 0.4),
+        0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .register-button:active {
+      transform: translateY(-1px) scale(1.01);
+    }
+
+    .register-footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .register-footer p {
+      color: #64748b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .register-footer a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-left: 5px;
+    }
+
+    .register-footer a:hover {
+      color: #2563eb;
+      text-decoration: underline;
+      transform: translateY(-1px);
+    }
+
+    /* Form validation styling */
+    .form-group.error input,
+    .form-group.error select {
+      border-color: #ef4444;
+      background: rgba(254, 242, 242, 0.8);
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    .form-group.success input,
+    .form-group.success select {
+      border-color: #10b981;
+      background: rgba(240, 253, 244, 0.8);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 15px;
+      }
+
+      .register-container {
+        padding: 30px 25px;
+        border-radius: 20px;
+        max-width: 100%;
+      }
+
+      .register-header h2 {
+        font-size: 28px;
+      }
+
+      .form-group input,
+      .form-group select {
+        padding: 14px 16px;
+        font-size: 14px;
+      }
+
+      .register-button {
+        padding: 14px 18px;
+        font-size: 14px;
+      }
+    }
+
+    /* Loading state */
+    .register-button.loading {
+      pointer-events: none;
+      background: linear-gradient(135deg, #94a3b8, #64748b) !important;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Success animation */
+    .success-checkmark {
+      display: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #10b981;
+      margin: 20px auto;
+      position: relative;
+    }
+
+    .success-checkmark::after {
+      content: '';
+      width: 20px;
+      height: 12px;
+      border: 3px solid white;
+      border-top: none;
+      border-right: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%) rotate(-45deg);
+    }
+
+    .success-checkmark.show {
+      display: block;
+      animation: scaleIn 0.5s ease-out;
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-header">
+      <h2>Faculty Registration</h2>
+      <p>Fill in the details to create your account</p>
+    </div>
+
+    <form id="registrationForm" method="POST">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span>*</span></label>
+          <input type="text" name="first_name" id="firstName" placeholder="Enter your first name" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name <span>*</span></label>
+          <input type="text" name="last_name" id="lastName" placeholder="Enter your last name" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email <span>*</span></label>
+          <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+        </div>
+        <div class="form-group">
+          <label>Password <span>*</span></label>
+          <input type="password" name="password" id="password" placeholder="Create a secure password" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Gender <span>*</span></label>
+          <select name="gender" id="gender" required>
+            <option value="">-- Select Gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Contact <span>*</span></label>
+          <input type="tel" name="contact" id="contact" placeholder="Enter your phone number" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Department <span>*</span></label>
+          <select name="department" id="department" required>
+            <option value="">-- Select Department --</option>
+            <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+            <option value="Artificial Intilligence & Data Science">Artificial Intilligence & Data Science</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>College Name <span>*</span></label>
+          <input type="text" name="college" id="college" placeholder="Enter your college name" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>City <span>*</span></label>
+          <input type="text" name="city" id="city" placeholder="Enter your city" required>
+        </div>
+        <div class="form-group">
+          <label>State <span>*</span></label>
+          <input type="text" name="state" id="state" placeholder="Enter your state" required>
+        </div>
+      </div>
+
+      <button type="submit" class="register-button">REGISTER</button>
+    </form>
+
+    <div class="register-footer">
+      <p>Already have an account? <a href="/login_faculty/">Login here</a></p>
+    </div>
+
+    <div class="success-checkmark" id="successCheckmark"></div>
+  </div>
+
+</body>
+</html>

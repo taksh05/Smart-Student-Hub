@@ -1,0 +1,539 @@
+{% extends "nav_faculty.html"%}
+  {% block title %} Faculty Dashboard - Approvals{% endblock %}
+  {% block extra_css %}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #1f2937;
+      margin : 0;
+      padding : 0;
+    }
+   
+    .container {
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+      {% comment %} margin-bottom: 8px; {% endcomment %}
+    }
+
+    p {
+      color: #6b7280;
+      {% comment %} margin-bottom: 32px; {% endcomment %}
+      font-size: 16px;
+    }
+
+    .topic h1{
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .topic p{
+      color: #6b7280;
+      margin-bottom: 32px;
+      font-size: 16px;
+    } 
+
+    .main-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e5e7eb;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .main-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .bulk-approve-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .bulk-approve-btn:hover {
+      background: #059669;
+      transform: scale(1.05);
+    }
+
+    select {
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      color: #374151;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      min-width: 140px;
+    }
+
+    select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .card-content {
+      padding: 24px 32px;
+    }
+
+    .activity-card {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .activity-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      background: white;
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .activity-checkbox {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .activity-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+      flex: 1;
+    }
+
+    .activity-tags {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .tag.conference {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .tag.certification {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .tag.leadership {
+      background: #fde68a;
+      color: #92400e;
+    }
+
+    .status {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-weight: 500;
+      position: absolute;
+      top: 24px;
+      right: 24px;
+    }
+
+    .status.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status.under-review {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .activity-details {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      padding-left: 0; /* Adjusted padding */
+    }
+
+    .activity-meta {
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      padding-left: 0; /* Adjusted padding */
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-btn {
+      background: #e5e7eb;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .view-btn:hover {
+      background: #d1d5db;
+    }
+
+    .approve-btn {
+      background: #10b981;
+      color: white;
+    }
+
+    .approve-btn:hover {
+      background: #059669;
+      transform: scale(1.05);
+    }
+
+    .reject-btn {
+      background: #ef4444;
+      color: white;
+    }
+
+    .reject-btn:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    .info-btn {
+      background: #6b7280;
+      color: white;
+    }
+
+    .info-btn:hover {
+      background: #4b5563;
+      transform: scale(1.05);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      animation: modalAppear 0.3s ease;
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+
+    .modal label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+
+    .modal input[type="number"],
+    .modal textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .modal input[type="number"]:focus,
+    .modal textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .modal textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    .modal-cancel-btn {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
+    .modal-cancel-btn:hover {
+        background-color: #e5e7eb;
+    }
+
+    @keyframes modalAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .card-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+      }
+
+      .header-controls {
+        justify-content: space-between;
+      }
+
+      .activity-card {
+        padding: 20px;
+      }
+
+      .actions {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+    }
+  </style>
+  {% endblock %}
+   {% block content %}
+{% load humanize %}
+<div class="container">
+    <div class="topic">
+        <h1>Manage Activities</h1>
+        <p>View and process all submissions from students in your department.</p>
+    </div>
+
+    {% comment %} {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 8px; background-color: #dcfce7; color: #065f46; border: 1px solid #a7f3d0;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %} {% endcomment %}
+
+    <div class="main-card">
+        <div class="card-header">
+            <h2 class="card-title">Submissions ({{ activity_list|length }})</h2>
+            <div class="header-controls">
+                 <a href="?status=all" style="padding: 8px 16px; text-decoration: none; border-radius: 6px; font-weight: 500; color: {% if active_filter == 'all' %}#fff{% else %}#333{% endif %}; background-color: {% if active_filter == 'all' %}#3b82f6{% else %}#f0f0f0{% endif %};">All</a>
+                 <a href="?status=pending" style="padding: 8px 16px; text-decoration: none; border-radius: 6px; font-weight: 500; color: {% if active_filter == 'pending' %}#fff{% else %}#333{% endif %}; background-color: {% if active_filter == 'pending' %}#f59e0b{% else %}#f0f0f0{% endif %};">Pending</a>
+                 <a href="?status=approved" style="padding: 8px 16px; text-decoration: none; border-radius: 6px; font-weight: 500; color: {% if active_filter == 'approved' %}#fff{% else %}#333{% endif %}; background-color: {% if active_filter == 'approved' %}#10b981{% else %}#f0f0f0{% endif %};">Approved</a>
+                 <a href="?status=rejected" style="padding: 8px 16px; text-decoration: none; border-radius: 6px; font-weight: 500; color: {% if active_filter == 'rejected' %}#fff{% else %}#333{% endif %}; background-color: {% if active_filter == 'rejected' %}#ef4444{% else %}#f0f0f0{% endif %};">Rejected</a>
+            </div>
+        </div>
+
+        <div class="card-content">
+            {% for activity in page_obj %}
+            <div class="activity-card">
+              <div class="activity-header">
+                <div class="activity-title">{{ activity.title }}</div>
+                <div class="status {{ activity.status }}">{{ activity.status|title }}</div>
+              </div>
+              <div class="activity-details">
+                <div class="activity-meta">Submitted by: {{ activity.student.first_name }} {{ activity.student.last_name }}</div>
+                <div>Submitted {{ activity.submission_date|date:"F d, Y" }}</div>
+                <div><strong>Proposed Credit:</strong> {{ activity.credit }}</div>
+                {% if activity.status == 'rejected' and activity.remark %}
+                    <div style="color: #b91c1c; margin-top: 5px;"><strong>Rejection Reason:</strong> {{ activity.remark }}</div>
+                {% endif %}
+              </div>
+
+              <div class="actions">
+                {% if activity.url %}<a href="{{ activity.url }}" target="_blank" class="btn view-btn">View Document</a>{% endif %}
+                
+                {% if activity.status == 'pending' %}
+                <button type="button" class="btn approve-btn" onclick="openApproveModal('{{ activity.pk }}', '{{ activity.model_type }}', '{{ activity.credit }}')">Approve</button>
+                <button type="button" class="btn reject-btn" onclick="openRejectModal('{{ activity.pk }}', '{{ activity.model_type }}')">Reject</button>
+                {% endif %}
+              </div>
+            </div>
+            {% empty %}
+                <p style="text-align: center; padding: 40px;">No activities found with the status '{{ active_filter }}'.</p>
+            {% endfor %}
+
+            <!-- Pagination Controls -->
+            <div style="text-align:center; margin-top:30px;">
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if active_filter %}&status={{ active_filter }}{% endif %}" class="btn view-btn">Previous</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if active_filter %}&status={{ active_filter }}{% endif %}" class="btn view-btn">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="approveModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-header">Approve Activity</h3>
+        <form method="POST" action="{% url 'faculty_approvals' %}">
+            {% csrf_token %}
+            <input type="hidden" name="activity_pk" id="approve_activity_pk">
+            <input type="hidden" name="model_type" id="approve_model_type">
+            <input type="hidden" name="action" value="approve">
+
+            <label for="approve_credit_points">Credit Points</label>
+            <input type="number" id="approve_credit_points" name="credit_points" min="0" step="1" required>
+
+            <label for="approve_remark">Remarks (Optional)</label>
+            <textarea id="approve_remark" name="remark" placeholder="Add any comments here..."></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn modal-cancel-btn" onclick="closeApproveModal()">Cancel</button>
+                <button type="submit" class="btn approve-btn">Confirm Approval</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-header">Reject Activity</h3>
+        <form method="POST" action="{% url 'faculty_approvals' %}">
+            {% csrf_token %}
+            <input type="hidden" name="activity_pk" id="reject_activity_pk">
+            <input type="hidden" name="model_type" id="reject_model_type">
+            <input type="hidden" name="action" value="reject">
+
+            <label for="reject_remark">Reason for Rejection</label>
+            <textarea id="reject_remark" name="remark" placeholder="Provide a clear reason for rejection..." required></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn modal-cancel-btn" onclick="closeRejectModal()">Cancel</button>
+                <button type="submit" class="btn reject-btn">Confirm Rejection</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // --- SCRIPT FOR APPROVE MODAL ---
+    function openApproveModal(activityPk, modelType, proposedCredits) {
+      document.getElementById('approve_activity_pk').value = activityPk;
+      document.getElementById('approve_model_type').value = modelType;
+      // Pre-fill with proposed credits, or a default like 10 if none proposed
+      document.getElementById('approve_credit_points').value = proposedCredits > 0 ? proposedCredits : 10;
+      document.getElementById("approveModal").classList.add("show");
+    }
+    function closeApproveModal() {
+      document.getElementById("approveModal").classList.remove("show");
+    }
+
+    // --- SCRIPT FOR REJECT MODAL ---
+    function openRejectModal(activityPk, modelType) {
+      document.getElementById('reject_activity_pk').value = activityPk;
+      document.getElementById('reject_model_type').value = modelType;
+      document.getElementById("rejectModal").classList.add("show");
+    }
+    function closeRejectModal() {
+      document.getElementById("rejectModal").classList.remove("show");
+    }
+</script>
+{% endblock %}
